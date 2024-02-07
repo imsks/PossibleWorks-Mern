@@ -4,6 +4,7 @@ const cors = require("cors")
 require("dotenv").config()
 const app = express()
 const authRoutes = require("./routes/auth")
+const taskRoutes = require("./routes/tasks")
 
 app.use(express.json())
 app.use(cors())
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/auth", authRoutes)
+app.use("/task", taskRoutes)
 
 // Start the server
 const port = process.env.PORT || 3000
