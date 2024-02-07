@@ -1,7 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { loginFields } from "../constants/formFields"
 import FormAction from "./FormAction"
 import Input from "./Input"
+import useAPI from "../hooks/useAPI"
+import useLocalStorage from "../hooks/useLocalStorage"
+import { localStorageKeys } from "../constants/global"
+import { useNavigate } from "react-router-dom"
 
 const fields = loginFields
 let fieldsState = {}
@@ -9,6 +13,9 @@ fields.forEach((field) => (fieldsState[field.id] = ""))
 
 export default function Login() {
     const [loginState, setLoginState] = useState(fieldsState)
+    const { response, error, makeAPI } = useAPI()
+    const { set } = useLocalStorage()
+    const navigate = useNavigate()
 
     const handleChange = (e) => {
         setLoginState({ ...loginState, [e.target.id]: e.target.value })
@@ -20,7 +27,16 @@ export default function Login() {
     }
 
     //Handle Login API Integration here
-    const authenticateUser = () => {}
+    const authenticateUser = () => {
+        makeAPI({ slug: "auth/login", payload: loginState })
+    }
+
+    useEffect(() => {
+        if (response && response.token) {
+            set(localStorageKeys.TOKEN, response.token)
+            navigate("/dashboard")
+        }
+    }, [response])
 
     return (
         <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
@@ -42,6 +58,7 @@ export default function Login() {
             </div>
 
             <FormAction handleSubmit={handleSubmit} text='Login' />
+            {error && <p>{error}</p>}
         </form>
     )
 }

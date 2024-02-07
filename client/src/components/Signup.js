@@ -36,7 +36,7 @@ export default function Signup() {
     }
 
     if (response) {
-        navigate("/")
+        return redirect("/")
     }
 
     return (
